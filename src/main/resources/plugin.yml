@@ -11,6 +11,7 @@ softdepend:
   - InfinityExpansion
   - Netheopoiesis
   - WildChests
+  - RoseStacker
 commands:
   networks:
     description: /networks
