@@ -10,6 +10,7 @@ public class SupportedPluginManager {
 
     private final boolean infinityExpansion;
     private final boolean netheopoiesis;
+    private final boolean rosestacker;
 
     // region First Tick Only Registrations
     private boolean mcMMO;
@@ -22,6 +23,8 @@ public class SupportedPluginManager {
         instance = this;
         this.infinityExpansion = Bukkit.getPluginManager().isPluginEnabled("InfinityExpansion");
         this.netheopoiesis = Bukkit.getPluginManager().isPluginEnabled("Netheopoiesis");
+        this.rosestacker = Bukkit.getPluginManager().isPluginEnabled("RoseStacker");
+
         Networks.getInstance()
             .getServer()
             .getScheduler()
@@ -47,6 +50,10 @@ public class SupportedPluginManager {
 
     public boolean isWildChests() {
         return wildChests;
+    }
+
+    public boolean isRosestacker() {
+        return rosestacker;
     }
 
     public static SupportedPluginManager getInstance() {
