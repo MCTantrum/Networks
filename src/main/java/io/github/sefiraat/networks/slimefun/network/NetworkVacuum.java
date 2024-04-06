@@ -1,8 +1,10 @@
 package io.github.sefiraat.networks.slimefun.network;
 
+import dev.rosewood.rosestacker.stack.StackedItem;
 import dev.sefiraat.sefilib.misc.ParticleUtils;
 import io.github.sefiraat.networks.NetworkStorage;
 import io.github.sefiraat.networks.Networks;
+import io.github.sefiraat.networks.managers.SupportedPluginManager;
 import io.github.sefiraat.networks.network.NodeDefinition;
 import io.github.sefiraat.networks.network.NodeType;
 import io.github.sefiraat.networks.slimefun.NetworkSlimefunItems;
@@ -36,7 +38,10 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Optional;
 
+import dev.rosewood.rosestacker.api.RoseStackerAPI;
+
 public class NetworkVacuum extends NetworkObject {
+
 
     private static final int[] INPUT_SLOTS = new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8};
 
@@ -95,15 +100,35 @@ public class NetworkVacuum extends NetworkObject {
                     return;
                 }
                 if (item.getPickupDelay() <= 0 && !SlimefunUtils.hasNoPickupFlag(item)) {
-                    final ItemStack itemStack = item.getItemStack();
-                    blockMenu.replaceExistingItem(inputSlot, itemStack);
-                    ParticleUtils.displayParticleRandomly(item, 1, 5, new Particle.DustOptions(Color.BLUE, 1));
-                    item.remove();
+
+                    if (SupportedPluginManager.getInstance().isRosestacker() && RoseStackerAPI.getInstance().isItemStacked(item)) {
+                        final StackedItem roseStack = RoseStackerAPI.getInstance().getStackedItem(item);
+                        final ItemStack itemStack = roseStack.getItem().getItemStack();
+
+                        if (roseStack.getStackSize() >= 64) {
+                            blockMenu.replaceExistingItem(inputSlot, itemStack);
+                            ParticleUtils.displayParticleRandomly(item, 1, 5, new Particle.DustOptions(Color.BLUE, 1));
+                            roseStack.setStackSize(roseStack.getStackSize() - 64);
+                        } else {
+                            blockMenu.replaceExistingItem(inputSlot, itemStack);
+                            ParticleUtils.displayParticleRandomly(item, 1, 5, new Particle.DustOptions(Color.BLUE, 1));
+                            item.remove();
+                        }
+
+                    } else {
+                        final ItemStack itemStack = item.getItemStack();
+
+                        blockMenu.replaceExistingItem(inputSlot, itemStack);
+                        ParticleUtils.displayParticleRandomly(item, 1, 5, new Particle.DustOptions(Color.BLUE, 1));
+                        item.remove();
+                    }
                 }
-                return;
             }
+            return;
         }
     }
+
+
 
     private void tryAddItem(@Nonnull BlockMenu blockMenu) {
         final NodeDefinition definition = NetworkStorage.getAllNetworkObjects().get(blockMenu.getLocation());
